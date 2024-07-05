@@ -15,6 +15,8 @@ public class GameDirector : MonoBehaviour
     bool endFrag = false; //ゲームの終了フラグ
     public int mode = 0;
     int next = 0; //next=0:どちらでもない、next=1:プレイヤー、next=2:COM
+    int flipTime = 120; //裏返りの時間
+    int flipStartTime; //裏返りの開始時間
 
     // Start is called before the first frame update
     void Start()
@@ -54,17 +56,20 @@ public class GameDirector : MonoBehaviour
             case 1:
                 //プレイヤーのターン
                 //プレイヤーが駒を置いたらmodeを一つ進める
-                if(generatorComponent.Playing())
+                if(generatorComponent.Playing()){
+                    flipStartTime = Time.frameCount;
                     mode++;
+                }
                 break;
             case 2:
                 //プレイヤーの手による、駒の裏返りの時間
                 //裏返す駒を実際に裏返す
-                flipActionComponent.FlipPiece(controllComponent.flipPieces);
-                //裏返し終わったので、今から裏返そうとしている駒たちのリストの要素を削除
-                controllComponent.flipPieces.Clear();
-                //modeを一つ進める
-                mode++;
+                if(flipActionComponent.FlipPiece(controllComponent.flipPieces, Time.frameCount, flipStartTime, flipTime)){
+                    //裏返し終わったので、今から裏返そうとしている駒たちのリストの要素を削除
+                    controllComponent.flipPieces.Clear();
+                    //modeを一つ進める
+                    mode++;
+                }
                 break;
             case 3:
                 //詰み判定
@@ -91,17 +96,20 @@ public class GameDirector : MonoBehaviour
                 break;
             case 4:
                 //相手のターン
-                if(controllComponent.ComTurn())
+                if(controllComponent.ComTurn()){
+                    flipStartTime = Time.frameCount;
                     mode++;
+                }
                 break;
             case 5:
                 //相手の手による、駒の裏返りの時間
                 //裏返す駒を実際に裏返す
-                flipActionComponent.FlipPiece(controllComponent.flipPieces);
-                //裏返し終わったので、今から裏返そうとしている駒たちのリストの要素を削除
-                controllComponent.flipPieces.Clear();
-                //modeを一つ進める
-                mode++;
+                if(flipActionComponent.FlipPiece(controllComponent.flipPieces, Time.frameCount, flipStartTime, flipTime)){
+                    //裏返し終わったので、今から裏返そうとしている駒たちのリストの要素を削除
+                    controllComponent.flipPieces.Clear();
+                    //modeを一つ進める
+                    mode++;
+                }
                 break;
             case 6:
                 //詰み判定
